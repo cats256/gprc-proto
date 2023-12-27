@@ -30,14 +30,27 @@ function onClientReady() {
     //     console.log(result?.message);
     // });
 
-    const stream = client.RandomNumbers({ maxVal: 85 });
-    stream.on("data", (chunk) => {
-        console.log(chunk);
-    });
+    // const stream = client.RandomNumbers({ maxVal: 85 });
+    // stream.on("data", (chunk) => {
+    //     console.log(chunk);
+    // });
     // stream.on("error", (err) => {
     //     console.error(err);
     // });
-    stream.on("end", () => {
-        console.log("communication ended");
+    // stream.on("end", () => {
+    //     console.log("communication ended");
+    // });
+
+    const stream = client.TodoList((err, result) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(result);
     });
+    stream.write({ todo: "walk the 1", status: "never" });
+    stream.write({ todo: "walk the 2", status: "doing" });
+    stream.write({ todo: "walk the 3", status: "impossible" });
+    stream.write({ todo: "walk the 4", status: "done" });
+    stream.end();
 }

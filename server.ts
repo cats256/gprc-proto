@@ -3,6 +3,8 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { ProtoGrpcType } from "./proto/random";
 import { RandomHandlers } from "./proto/randomPackage/Random";
+import { ToDoRequest } from "./proto/randomPackage/ToDoRequest";
+import { ToDoResponse } from "./proto/randomPackage/ToDoResponse";
 
 const PORT = 8082;
 const PROTO_FILE = "./proto/random.proto";
@@ -25,6 +27,7 @@ function main() {
     });
 }
 
+const todoList: ToDoResponse = { todos: [] };
 function getServer() {
     const server = new grpc.Server();
     server.addService(randomPackage.Random.service, {
@@ -46,6 +49,15 @@ function getServer() {
                     call.end();
                 }
             }, 500);
+        },
+        TodoList: (call, callback) => {
+            call.on("data", (chunk: ToDoRequest) => {
+                todoList.todos?.push(chunk);
+                console.log(chunk);
+            });
+            call.on("end", () => {
+                callback(null, { todos: todoList.todos });
+            });
         },
     } as RandomHandlers);
 
